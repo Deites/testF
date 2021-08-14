@@ -1,0 +1,9 @@
+{% extends 'admin/change_form.html' %}
+
+{% block object-tools %}
+    <form action="{% url 'posts:postdeletecomments' object_id %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Delete All Comments">
+    </form>
+    {{ block.super }}
+{% endblock %}

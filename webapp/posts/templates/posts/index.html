@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <title>Posts</title>
+</head>
+<body>
+    <aside style="width: 15%; float: left; height: 100em; position: fixed;">
+        <nav class="nav flex-column">
+            <a href="{% url 'posts:postsview' %}" class="nav-link">Main</a>
+            <a href="{% url 'posts:createpost' %}" class="nav-link">Create post</a>
+            {% if user.is_staff %}
+                <a href="/admin" class="nav-link">Admin</a>
+            {% endif %}
+            <a href="{% url 'posts:logout' %}" class="nav-link"><button class="btn btn-danger">Exit</button></a>
+        </nav>
+    </aside>
+
+    <main style="width: 85%; float: right;">
+    {% block content %}
+
+        {% for p in posts %}
+            <div class="card" style="width: 18rem; margin: 40px auto;">
+                <img src="{{ p.photo.url }}" class="card-img-top">
+                <div class="card-body">
+                    <h4 class="card-title">{{ p.topic }}</h4>
+                    <p class="card-text">{{ p.description }}</p>
+                    {% if p.comment_set.all %}
+                        <h5 class="card-title">Comments</h5>
+                        {% for c in p.comment_set.all %}
+                            <p class="card-text"><span>{{ c.whose.username }}</span>: {{ c.comment }}</p>
+                        {% endfor %}
+                    {% endif %}      
+
+                    <a href="{% url 'posts:comment' p.id %}"><button class="btn btn-success" style="float: left;">Comment on</button></a>
+                    
+                    {% if user.is_superuser %}
+                        <a href="{% url 'posts:postdelete' p.id %}"><button class="btn btn-danger" style="float: right;">Remove</button></a>
+                    {% endif %}
+                    
+                    {% if p.whosePost == user %}
+                        <a href="{% url 'posts:postupdate' p.id %}"><button class="btn btn-dark" style="float: right;">Edit</button></a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+
+    {% endblock %}
+    </main> 
+</body>
+</html>
